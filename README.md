@@ -1,40 +1,71 @@
+Token Vesting Flow Guide
 Step 1 — Deploy TestToken
+Deploy the TestToken contract
+No constructor arguments are required
 
-Deploy karo, koi argument nahi chahiye
-Tumhare wallet ko mil jayenge 1,000,000 TTK
-Copy the deployed address → ye hai tera _token address
+After deployment:
+
+Your wallet will receive 1,000,000 TTK tokens
+
+Copy the deployed contract address.
+This will be your _token address.
 
 Step 2 — Deploy VestingContract
-_token = <TestToken address paste karo>
+Deploy the VestingContract
 
-Step 3 — Approve karo (IMPORTANT ⚠️)
-TestToken → approve(
+Constructor parameter:
+
+_token = <paste TestToken contract address>
+Step 3 — Approve Tokens (Important)
+
+Before creating vesting, you must approve tokens.
+
+Call approve on the TestToken contract:
+
+approve(
     spender = <VestingContract address>,
-    amount  = 10000000000000000000000  // ya jitna chahiye
+    amount  = 10000000000000000000000
 )
 
-Ye step miss mat karna — bina approve ke createVesting fail hoga with transfer failed
+This allows the vesting contract to transfer tokens on your behalf.
+
+Do not skip this step.
+Otherwise, createVesting() will fail with "transfer failed".
 
 Step 4 — Create Vesting
-VestingContract → createVesting(
+
+Call createVesting on the VestingContract:
+
+createVesting(
     user   = <user wallet address>,
-    amount = 1000000000000000000000   // 1000 TTK (18 decimals)
+    amount = 1000000000000000000000
 )
 
-Step 5 — 3 min baad claim karo user wallet se
-VestingContract → claim()
+This creates a vesting schedule for 1000 TTK tokens.
 
-Token Amount Quick Reference
-1 TTK      = 1000000000000000000      (1 * 10^18)
-100 TTK    = 100000000000000000000
-1000 TTK   = 1000000000000000000000
-10000 TTK  = 10000000000000000000000
+Step 5 — Claim Tokens
+After 3 minutes, the user can claim tokens
 
+Call from the user wallet:
 
-Total = 1000 tokens, Duration = 1 hour, Interval = 3 min
-→ 20 intervals total
+claim()
+Token Amount Reference
+Tokens	Value (18 decimals)
+1 TTK	1000000000000000000
+100 TTK	100000000000000000000
+1000 TTK	1000000000000000000000
+10000 TTK	10000000000000000000000
+Vesting Logic
+Total Tokens: 1000 TTK
+Duration: 1 hour
+Interval: 3 minutes
 
-After 3 min  → claim 50 tokens  (1/20)
-After 6 min  → claim 50 tokens  (2/20)
-After 9 min  → claim 50 tokens  ...
-After 60 min → all 1000 released
+Total intervals = 20
+
+Release Schedule
+Time	Tokens Released
+After 3 minutes	50 TTK
+After 6 minutes	50 TTK
+After 9 minutes	50 TTK
+...	...
+After 60 minutes	Full 1000 TTK
